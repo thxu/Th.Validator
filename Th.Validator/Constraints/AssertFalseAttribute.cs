@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Th.Validator.Constraints
 {
@@ -8,12 +6,16 @@ namespace Th.Validator.Constraints
     /// 验证参数必须为false
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class AssertFalseAttribute : Attribute, IErrorMsg
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class AssertFalseAttribute : BaseAttribute
     {
         /// <summary>
-        /// 返回的错误信息
+        /// 构造函数
         /// </summary>
-        public string Message { get; set; }
+        /// <param name="message">错误信息</param>
+        public AssertFalseAttribute(string message)
+        {
+            this.Message = message;
+        }
     }
 }
