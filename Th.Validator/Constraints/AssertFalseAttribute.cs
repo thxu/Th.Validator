@@ -17,5 +17,10 @@ namespace Th.Validator.Constraints
         {
             this.Message = message;
         }
+
+        public override bool Validate(object value)
+        {
+            return false;
+        }
     }
 }

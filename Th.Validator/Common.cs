@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Xml.Serialization;
 using ArxOne.MrAdvice.Advice;
 
 namespace Th.Validator
@@ -50,6 +52,54 @@ namespace Th.Validator
             return null;
         }
 
+        /// <summary>
+        /// 获取参数中的key值
+        /// </summary>
+        /// <param name="param">参数</param>
+        /// <param name="context">函数执行上下文</param>
+        /// <returns>参数值</returns>
+        internal static object GetComplexVal(this string param, MethodAdviceContext context)
+        {
+            var paramTmps = param.Split('.');
+            ParameterInfo[] parameters = context.TargetMethod.GetParameters();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].Name == paramTmps[0])
+                {
+                    Type ts = context.Arguments[i].GetType();
 
+                    object obj = DeepCopy(context.Arguments[i], ts);
+                    for (int j = 1; j < paramTmps.Length; j++)
+                    {
+                        var val = obj.GetType().GetProperty(paramTmps[j])?.GetValue(obj, null);
+                        if (val != null) obj = DeepCopy(val, val.GetType());
+                    }
+
+                    return obj;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// XML序列化方式深复制
+        /// </summary>
+        /// <param name="obj">对象</param>
+        /// <param name="type">对象类型</param>
+        /// <returns>复制对象</returns>
+        internal static object DeepCopy(this object obj, Type type)
+        {
+            object retval;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                XmlSerializer xml = new XmlSerializer(type);
+                xml.Serialize(ms, obj);
+                ms.Seek(0, SeekOrigin.Begin);
+                retval = xml.Deserialize(ms);
+                ms.Close();
+            }
+
+            return retval;
+        }
     }
 }
