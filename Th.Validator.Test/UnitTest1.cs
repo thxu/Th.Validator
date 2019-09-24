@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Th.Validator.Aop;
@@ -11,8 +12,20 @@ namespace Th.Validator.Test
         [TestMethod]
         public void TestMethod1()
         {
-            new TestLogic().AddTest(new TestModelA() { Field1 = false, Field2 = true, Field3 = 1 });
-            new TestLogic().AddTest(new TestModelA() { Field1 = true, Field2 = true, Field3 = 1 });
+            new TestLogic()
+                .AddTest(new TestModelA()
+                {
+                    Field1 = false,
+                    Field2 = true,
+                    Field3 = 1
+                });
+            new TestLogic()
+                .AddTest(new TestModelA()
+                {
+                    Field1 = true,
+                    Field2 = true,
+                    Field3 = 1
+                });
 
             int a = 0;
             Assert.IsTrue(true);
@@ -30,6 +43,11 @@ namespace Th.Validator.Test
 
     public class TestModelA
     {
+        public string Field02 { get; set; }
+        public String Field0 { get; set; }
+
+        public Int32 Field01 { get; set; }
+
         [AssertFalse("×Ö¶Î1²»ÄÜÎªtrue")]
         [DataMember]
         public bool Field1 { get; set; }
@@ -50,5 +68,13 @@ namespace Th.Validator.Test
         public bool BField2 { get; set; }
 
         public int BField3 { get; set; }
+    }
+
+    public enum enum1
+    {
+        a = 0,
+
+        b = 2,
+
     }
 }

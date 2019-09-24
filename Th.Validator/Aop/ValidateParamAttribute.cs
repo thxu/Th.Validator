@@ -52,16 +52,18 @@ namespace Th.Validator.Aop
                 var paramType = parameters[0].ParameterType;
                 var fieldsProp = paramType.GetProperties();
 
+                ScanAllProp(fieldsProp.ToList(), null);
+
                 var arg = arguments[0];
                 var tt = arg.GetType();
 
-               var ttt = "a.Field1".GetComplexVal(context);
+                var ttt = "a.Field1".GetComplexVal(context);
 
                 foreach (PropertyInfo propertyInfo in fieldsProp)
                 {
 
                     var val = paramType.GetProperty(propertyInfo.Name)?.GetValue(arg, null);
-                    
+
 
                     if (propertyInfo.CustomAttributes.Any())
                     {
@@ -116,6 +118,28 @@ namespace Th.Validator.Aop
             {
                 Console.WriteLine(e);
                 throw;
+            }
+        }
+
+        private void ScanAllProp(List<PropertyInfo> props, object arg)
+        {
+            if (props == null || !props.Any())
+            {
+                return;
+            }
+
+            foreach (PropertyInfo prop in props)
+            {
+                var name = prop.Name;
+                if (prop.PropertyType.IsClass)
+                {
+                    
+                }
+
+                if (prop.PropertyType.IsPrimitive)
+                {
+                    
+                }
             }
         }
     }
