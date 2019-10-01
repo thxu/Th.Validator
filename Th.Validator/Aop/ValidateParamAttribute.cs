@@ -52,7 +52,6 @@ namespace Th.Validator.Aop
         /// <param name="context">The method advice context.</param>
         public void Advise(MethodAdviceContext context)
         {
-            StringBuilder errorMsg = new StringBuilder();
             try
             {
                 IList<object> arguments = context.Arguments;
@@ -65,7 +64,7 @@ namespace Th.Validator.Aop
                 if (!string.IsNullOrWhiteSpace(chkRes))
                 {
                     // 参数不符合要求
-
+                    throw new ConstraintViolationException(chkRes);
                 }
 
                 var arg = arguments[0];
@@ -73,58 +72,6 @@ namespace Th.Validator.Aop
 
                 var ttt = "a.Field1".GetComplexVal(context);
 
-                foreach (PropertyInfo propertyInfo in fieldsProp)
-                {
-
-                    var val = paramType.GetProperty(propertyInfo.Name)?.GetValue(arg, null);
-
-
-                    if (propertyInfo.CustomAttributes.Any())
-                    {
-                        //var customAttrs = propertyInfo.CustomAttributes;
-                        //foreach (CustomAttributeData customAttributeData in customAttrs)
-                        //{
-                        //    var type1 = customAttributeData.AttributeType;
-                        //    var superClassType = typeof(BaseAttribute);
-                        //    if (Array.IndexOf(type1.GetInterfaces(), superClassType) > -1
-                        //        || type1.IsSubclassOf(superClassType))
-                        //    {
-                        //        //var tt = customAttributeData.ConstructorArguments[0].Value;
-
-                        //        var dObj = Activator.CreateInstance(type1, new object[] { "errorMsgOfField1" });
-                        //        BindingFlags flag = BindingFlags.Public | BindingFlags.Instance;
-                        //        object[] p = new object[] { true };
-                        //        var validateMethod = type1.GetMethod("Validate");
-                        //        var ret = validateMethod?.Invoke(dObj, flag, Type.DefaultBinder, p, null);
-
-                        //        int a = 0;
-                        //    }
-                        //}
-                        var tmp = propertyInfo.GetCustomAttributes(true);
-
-
-                        foreach (Attribute attr in tmp)
-                        {
-                            var type1 = attr.GetType();
-                            var superClassType = typeof(BaseAttribute);
-                            if (Array.IndexOf(type1.GetInterfaces(), superClassType) > -1
-                                || type1.IsSubclassOf(superClassType))
-                            {
-                                var tmp1 = tmp[0] as BaseAttribute;
-                                var tmp2 = tmp1?.Validate(1);
-
-                                //var validateMethod = type1.GetMethod("Validate");
-                                //var dObj = Activator.CreateInstance(type1, new object[] { "errorMsgOfField1" });
-                                //BindingFlags flag = BindingFlags.Public | BindingFlags.Instance;
-                                //object[] p = new object[] { true };
-                                //var ret = validateMethod?.Invoke(dObj, flag, Type.DefaultBinder, p, null);
-
-                                //var tt = type1.GetProperty("message")?.GetValue(attr);
-                                int a = 0;
-                            }
-                        }
-                    }
-                }
 
                 context.Proceed();
             }

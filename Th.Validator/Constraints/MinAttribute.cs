@@ -3,29 +3,26 @@
 namespace Th.Validator.Constraints
 {
     /// <summary>
-    /// 基础特性，所有的自定义特性都要继承此特性
+    /// 验证元素值大于等于指定的value值
     /// </summary>
-    public abstract class BaseAttribute : Attribute
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class MinAttribute : BaseAttribute
     {
         /// <summary>
-        /// 返回的错误信息
+        /// 要比较的值
         /// </summary>
-        internal string Message { get; set; }
-
-        /// <summary>
-        /// 分组，用于解决同一个参数的校验方式在不同业务中使用不同规则
-        /// </summary>
-        internal string Group { get; set; }
+        private decimal _value;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="value">要比较的值</param>
         /// <param name="msg">返回的错误信息</param>
         /// <param name="group">分组，用于解决同一个参数的校验方式在不同业务中使用不同规则</param>
-        protected BaseAttribute(string msg, string group = "")
+
+        public MinAttribute(decimal value, string msg, string @group = "") : base(msg, @group)
         {
-            this.Message = msg;
-            this.Group = group;
         }
 
         /// <summary>
@@ -33,6 +30,9 @@ namespace Th.Validator.Constraints
         /// </summary>
         /// <param name="value">参数值</param>
         /// <returns>符合要求=true</returns>
-        public abstract bool Validate(object value);
+        public override bool Validate(object value)
+        {
+            return false;
+        }
     }
 }

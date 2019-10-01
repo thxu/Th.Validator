@@ -3,29 +3,27 @@
 namespace Th.Validator.Constraints
 {
     /// <summary>
-    /// 基础特性，所有的自定义特性都要继承此特性
+    /// 验证元素值与指定的正则表达式匹配
     /// </summary>
-    public abstract class BaseAttribute : Attribute
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class PatternAttribute : BaseAttribute
     {
         /// <summary>
-        /// 返回的错误信息
+        /// 正则表达式
         /// </summary>
-        internal string Message { get; set; }
-
-        /// <summary>
-        /// 分组，用于解决同一个参数的校验方式在不同业务中使用不同规则
-        /// </summary>
-        internal string Group { get; set; }
+        private string _regex;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="regex">正则表达式</param>
         /// <param name="msg">返回的错误信息</param>
         /// <param name="group">分组，用于解决同一个参数的校验方式在不同业务中使用不同规则</param>
-        protected BaseAttribute(string msg, string group = "")
+
+        public PatternAttribute(string regex, string msg, string @group = "") : base(msg, @group)
         {
-            this.Message = msg;
-            this.Group = group;
+            _regex = regex;
         }
 
         /// <summary>
@@ -33,6 +31,9 @@ namespace Th.Validator.Constraints
         /// </summary>
         /// <param name="value">参数值</param>
         /// <returns>符合要求=true</returns>
-        public abstract bool Validate(object value);
+        public override bool Validate(object value)
+        {
+            return false;
+        }
     }
 }

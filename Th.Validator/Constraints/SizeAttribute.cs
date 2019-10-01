@@ -3,29 +3,34 @@
 namespace Th.Validator.Constraints
 {
     /// <summary>
-    /// 基础特性，所有的自定义特性都要继承此特性
+    /// 验证元素值的在min和max（包含）指定区间之内，如字符长度、集合大小
     /// </summary>
-    public abstract class BaseAttribute : Attribute
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class SizeAttribute : BaseAttribute
     {
         /// <summary>
-        /// 返回的错误信息
+        /// 下限
         /// </summary>
-        internal string Message { get; set; }
+        private int _min;
 
         /// <summary>
-        /// 分组，用于解决同一个参数的校验方式在不同业务中使用不同规则
+        /// 上限
         /// </summary>
-        internal string Group { get; set; }
+        private int _max;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="min">下限</param>
+        /// <param name="max">上限</param>
         /// <param name="msg">返回的错误信息</param>
         /// <param name="group">分组，用于解决同一个参数的校验方式在不同业务中使用不同规则</param>
-        protected BaseAttribute(string msg, string group = "")
+
+        public SizeAttribute(int min, int max, string msg, string @group = "") : base(msg, @group)
         {
-            this.Message = msg;
-            this.Group = group;
+            _min = min;
+            _max = max;
         }
 
         /// <summary>
@@ -33,6 +38,9 @@ namespace Th.Validator.Constraints
         /// </summary>
         /// <param name="value">参数值</param>
         /// <returns>符合要求=true</returns>
-        public abstract bool Validate(object value);
+        public override bool Validate(object value)
+        {
+            return false;
+        }
     }
 }
