@@ -101,5 +101,33 @@ namespace Th.Validator
 
             return retval;
         }
+
+        /// <summary>
+        /// 获取指定数组中每个元素的类型
+        /// </summary>
+        /// <param name="t">数组类型</param>
+        /// <returns>元素类型</returns>
+        internal static Type GetArrayElementType(this Type t)
+        {
+            if (!t.IsArray) return null;
+            if (t.FullName != null)
+            {
+                string tName = t.FullName.Replace("[]", string.Empty);
+                Type elType = t.Assembly.GetType(tName);
+                return elType;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 判断类型是否需要进行递归检查
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>判断结果，需要递归检查=true</returns>
+        internal static bool IsNeedRecursionChk(this Type type)
+        {
+            return type.IsClass && type != typeof(string);
+        }
     }
 }

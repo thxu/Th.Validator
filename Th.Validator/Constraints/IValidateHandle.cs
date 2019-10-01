@@ -19,6 +19,11 @@ namespace Th.Validator.Constraints
         ///// </summary>
         //string Group { get; set; }
 
+        /// <summary>
+        /// 验证参数是否符合要求
+        /// </summary>
+        /// <param name="value">参数值</param>
+        /// <returns>符合要求=true</returns>
         bool Validate(object value);
     }
 }
