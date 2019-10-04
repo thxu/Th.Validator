@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Th.Validator.Aop;
@@ -26,20 +27,22 @@ namespace Th.Validator.Test
                     //    BField2 = true,
                     //    BField3 = 3,
                     //},
-                    Field5 = new TestModelB[2]
-                    {
-                        new TestModelB()
-                        {
-                            BField3 = 1,
-                            //BField1 = true,
-                        },
-                        new TestModelB()
-                        {
-                            BField3 = 2,
-                            BField1 = true,
-                        },
-                    }
-                });
+
+                    //Field5 = new List<TestModelB>
+                    //{
+                    //    new TestModelB()
+                    //    {
+                    //        BField3 = 1,
+                    //        //BField1 = true,
+                    //    },
+                    //    new TestModelB()
+                    //    {
+                    //        BField3 = 2,
+                    //        BField1 = true,
+                    //    },
+                    //}
+                    Field5 = null,
+                }, 1);
             //new TestLogic()
             //    .AddTest(new TestModelA()
             //    {
@@ -77,8 +80,8 @@ namespace Th.Validator.Test
 
     public class TestLogic
     {
-        [ValidateParam]
-        public int AddTest(TestModelA a)
+        [ValidateParam("a-b")]
+        public int AddTest(TestModelA a, int b)
         {
             return 1;
         }
@@ -91,16 +94,18 @@ namespace Th.Validator.Test
 
         //public Int32[] Field01 { get; set; }
 
+        //[NotNull("字段1不能为Null")]
         //[AssertFalse("字段1不能为true")]
         //[DataMember]
-        //public bool Field1 { get; set; }
+        //public bool? Field1 { get; set; }
 
         ////public bool Field2 { get; set; }
 
         ////public int Field3 { get; set; }
 
         //public TestModelB Field4 { get; set; }
-        public TestModelB[] Field5 { get; set; }
+        //[NotNull("字段5不能为Null")]
+        public IList<TestModelB> Field5 { get; set; }
     }
 
     public class TestModelB

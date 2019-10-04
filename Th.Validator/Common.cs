@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -154,6 +155,22 @@ namespace Th.Validator
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// 判断是否是集合类型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>判断结果，集合类型=true</returns>
+        internal static bool IsEnumerableType(this Type type)
+        {
+            var superClassType = typeof(IEnumerable);
+            if (Array.IndexOf(type.GetInterfaces(), superClassType) > -1
+            || type.IsSubclassOf(superClassType))
+            {
+                return true;
+            }
+            return type.IsArray;
         }
 
         /// <summary>

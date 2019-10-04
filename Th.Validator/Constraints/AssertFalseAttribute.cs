@@ -27,9 +27,13 @@ namespace Th.Validator.Constraints
         /// <returns>符合要求=true</returns>
         public override bool Validate(object value, PropertyInfo prop)
         {
-            if (prop.PropertyType != typeof(bool))
+            if (prop.PropertyType != typeof(bool) && prop.PropertyType != typeof(bool?))
             {
                 return false;
+            }
+            if (prop.PropertyType == typeof(bool?) && value == null)
+            {
+                return true;
             }
             return (bool)value == false;
         }
