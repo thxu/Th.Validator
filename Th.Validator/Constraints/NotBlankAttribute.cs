@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Th.Validator.Constraints
 {
     /// <summary>
-    /// 验证元素值不为空（不为null、去除首尾空格后长度为0），不同于NotEmpty，NotBlank只应用于字符串且在比较时会去除字符串的首尾空格
+    /// 验证元素值不为空（不为null、去除首尾空格后长度不为0），不同于NotEmpty，NotBlank只应用于字符串且在比较时会去除字符串的首尾空格
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
@@ -22,10 +23,21 @@ namespace Th.Validator.Constraints
         /// 验证参数是否符合要求
         /// </summary>
         /// <param name="value">参数值</param>
+        /// <param name="prop">参数类型</param>
         /// <returns>符合要求=true</returns>
-        public override bool Validate(object value)
+        public override bool Validate(object value, PropertyInfo prop)
         {
-            return false;
+            if (prop.PropertyType != typeof(string))
+            {
+                return false;
+            }
+            string str = (string)value;
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return false;
+            }
+            str = str.Trim();
+            return str.Length > 0;
         }
     }
 }

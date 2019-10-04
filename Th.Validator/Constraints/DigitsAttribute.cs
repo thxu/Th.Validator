@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Th.Validator.Constraints
 {
@@ -36,10 +37,17 @@ namespace Th.Validator.Constraints
         /// 验证参数是否符合要求
         /// </summary>
         /// <param name="value">参数值</param>
+        /// <param name="prop">参数类型</param>
         /// <returns>符合要求=true</returns>
-        public override bool Validate(object value)
+        public override bool Validate(object value, PropertyInfo prop)
         {
-            return false;
+            if (!prop.PropertyType.IsNumericType())
+            {
+                return false;
+            }
+            decimal dec = (decimal)value;
+            
+            return ((long)dec).NumberOfIntegerDigits() <= _integer && dec.NumberOfDecimalDigits() <= _fraction;
         }
     }
 }

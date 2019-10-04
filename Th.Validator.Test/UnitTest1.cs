@@ -51,6 +51,28 @@ namespace Th.Validator.Test
             int a = 0;
             Assert.IsTrue(true);
         }
+
+        [TestMethod]
+        public void Test2()
+        {
+            sbyte s = 127;
+            decimal dec = (decimal)s;
+            string tmp = dec.ToString("0.#");
+
+            //var numberofint = ((long)dec).NumberOfIntegerDigits();
+            //var numberofdec = ((decimal)dec).NumberOfDecimalDigits();
+
+
+            dec = 12.30200m;
+            //numberofint = ((long)dec).NumberOfIntegerDigits();
+            //numberofdec = ((decimal)dec).NumberOfDecimalDigits();
+            tmp = dec.ToString();
+
+            dec = 0.0030m;
+            //numberofint = ((long)dec).NumberOfIntegerDigits();
+            //numberofdec = ((decimal)dec).NumberOfDecimalDigits();
+            tmp = dec.ToString();
+        }
     }
 
     public class TestLogic

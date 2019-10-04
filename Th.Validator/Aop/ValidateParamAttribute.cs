@@ -38,7 +38,7 @@ namespace Th.Validator.Aop
         /// </summary>
         /// <param name="type">验证类型</param>
         /// <param name="paramName">要验证的参数，不传默认为验证当前方法入参的所有参数</param>
-        public ValidateParamAttribute(string paramName = "",string group = "", ValidType type = ValidType.Fast)
+        public ValidateParamAttribute(string paramName = "", string group = "", ValidType type = ValidType.Fast)
         {
             _type = type;
             _paramNames = paramName;
@@ -82,6 +82,12 @@ namespace Th.Validator.Aop
             }
         }
 
+        /// <summary>
+        /// 检查所有的参数
+        /// </summary>
+        /// <param name="props">属性集合</param>
+        /// <param name="arg">参数值</param>
+        /// <returns>错误原因</returns>
         private string ChkAllProp(List<PropertyInfo> props, object arg)
         {
             if (props == null || !props.Any())
@@ -156,7 +162,7 @@ namespace Th.Validator.Aop
         {
             if (IsChkParamAttrDic.ContainsKey(prop))
             {
-                return ChkAllAttr(IsChkParamAttrDic[prop], arg);
+                return ChkAllAttr(IsChkParamAttrDic[prop], arg, prop);
             }
             if (prop.CustomAttributes.Any())
             {
@@ -177,19 +183,19 @@ namespace Th.Validator.Aop
                     //IsChkParamAttrDic.TryAdd(prop, attributes);
                     IsChkParamAttrDic.AddOrUpdate(prop, attributes, (key, val) => attributes);
 
-                    return ChkAllAttr(attributes, arg);
+                    return ChkAllAttr(attributes, arg, prop);
                 }
             }
 
             return string.Empty;
         }
 
-        private string ChkAllAttr(List<Attribute> attrs, object arg)
+        private string ChkAllAttr(List<Attribute> attrs, object arg, PropertyInfo prop)
         {
             StringBuilder errMsg = new StringBuilder();
             foreach (Attribute attr in attrs)
             {
-                var attrErrMsg = SingleAttrChk(attr, arg);
+                var attrErrMsg = SingleAttrChk(attr, arg, prop);
                 if (!string.IsNullOrWhiteSpace(attrErrMsg))
                 {
                     // 说明有错误信息
@@ -212,7 +218,7 @@ namespace Th.Validator.Aop
         /// <param name="attr">特性</param>
         /// <param name="arg">值</param>
         /// <returns>校验结果，若失败则返回错误信息</returns>
-        private string SingleAttrChk(Attribute attr, object arg)
+        private string SingleAttrChk(Attribute attr, object arg, PropertyInfo prop)
         {
             var baseAttribute = attr as BaseAttribute;
             if (baseAttribute == null)
@@ -226,7 +232,7 @@ namespace Th.Validator.Aop
                     // 非当前组特性，不用校验参数
                     return null;
                 }
-                var validateRes = baseAttribute.Validate(arg);
+                var validateRes = baseAttribute.Validate(arg, prop);
                 if (!validateRes)
                 {
                     return baseAttribute.Message;

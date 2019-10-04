@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Th.Validator.Constraints
 {
@@ -22,9 +23,20 @@ namespace Th.Validator.Constraints
         /// 验证参数是否符合要求
         /// </summary>
         /// <param name="value">参数值</param>
+        /// <param name="prop">参数类型</param>
         /// <returns>符合要求=true</returns>
-        public override bool Validate(object value)
+        public override bool Validate(object value, PropertyInfo prop)
         {
+            if (prop.PropertyType == typeof(string))
+            {
+                // 字符串，判断非Null，且长度大于零
+                return value != null && ((string)value).Length > 0;
+            }
+            if (prop.PropertyType.IsArray)
+            {
+                // 集合类型，判断非Null，且集合个数大于零
+                return value != null && ((Array)value).Length > 0;
+            }
             return false;
         }
     }

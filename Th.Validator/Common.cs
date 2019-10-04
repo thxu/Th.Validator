@@ -129,5 +129,71 @@ namespace Th.Validator
         {
             return type.IsClass && type != typeof(string);
         }
+
+        /// <summary>
+        /// 判断是否是数字类型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>判断结果，数字类型=true</returns>
+        internal static bool IsNumericType(this Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// 判断整数的位数
+        /// </summary>
+        /// <param name="val">要判断的值</param>
+        /// <returns>位数</returns>
+        internal static int NumberOfIntegerDigits(this long val)
+        {
+            int cnt = 0;
+            while (val > 0)
+            {
+                val /= 10;
+                ++cnt;
+            }
+            return cnt;
+        }
+
+        /// <summary>
+        /// 判断小数的位数
+        /// </summary>
+        /// <param name="val">要判断的值</param>
+        /// <returns>位数</returns>
+        internal static int NumberOfDecimalDigits(this decimal val)
+        {
+            int cnt = 0;
+            var str = val.ToString();
+            for (int i = str.Length - 1; i >= 0; i--)
+            {
+                if (str[i] == '0' && cnt == 0)
+                {
+                    continue;
+                }
+                if (str[i] == '.')
+                {
+                    return cnt;
+                }
+                cnt++;
+            }
+            return 0;
+        }
     }
 }
