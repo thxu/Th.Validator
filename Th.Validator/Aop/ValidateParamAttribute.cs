@@ -172,9 +172,12 @@ namespace Th.Validator.Aop
                     //  循环判断每个子元素
                     foreach (object arrVal in (IEnumerable)val)
                     {
+                        //errMsg = elementType.IsNeedRecursionChk()
+                        //            ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
+                        //            : SinglePropChk(prop, arrVal);
                         errMsg = elementType.IsNeedRecursionChk()
-                                    ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
-                                    : SinglePropChk(prop, arrVal);
+                                   ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
+                                   : string.Empty;
                         if (!string.IsNullOrWhiteSpace(errMsg))
                         {
                             return errMsg;

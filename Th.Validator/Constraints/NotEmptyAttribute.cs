@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Reflection;
 
 namespace Th.Validator.Constraints
@@ -32,10 +33,10 @@ namespace Th.Validator.Constraints
                 // 字符串，判断非Null，且长度大于零
                 return value != null && ((string)value).Length > 0;
             }
-            if (prop.PropertyType.IsArray)
+            if (prop.PropertyType.IsEnumerableType())
             {
                 // 集合类型，判断非Null，且集合个数大于零
-                return value != null && ((Array)value).Length > 0;
+                return value != null && ((ICollection)value).Count > 0;
             }
             return false;
         }

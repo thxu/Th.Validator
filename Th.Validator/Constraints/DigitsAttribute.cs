@@ -45,7 +45,7 @@ namespace Th.Validator.Constraints
             {
                 return false;
             }
-            decimal dec = (decimal)value;
+            decimal dec = Convert.ToDecimal(value);
             
             return ((long)dec).NumberOfIntegerDigits() <= _integer && dec.NumberOfDecimalDigits() <= _fraction;
         }

@@ -16,14 +16,21 @@ namespace Th.Validator.Constraints
         private decimal _value;
 
         /// <summary>
+        /// 是否包含传入的值
+        /// </summary>
+        private bool _isInclude;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="value">要比较的值</param>
         /// <param name="msg">返回的错误信息</param>
+        /// <param name="isInclude">是否包含传入的值</param>
         /// <param name="group">分组，用于解决同一个参数的校验方式在不同业务中使用不同规则</param>
-        public MaxAttribute(decimal value, string msg, string @group = "") : base(msg, @group)
+        public MaxAttribute(double value, string msg, bool isInclude = false, string @group = "") : base(msg, @group)
         {
-            _value = value;
+            _value = Convert.ToDecimal(value);
+            _isInclude = isInclude;
         }
 
         /// <summary>
@@ -34,8 +41,12 @@ namespace Th.Validator.Constraints
         /// <returns>符合要求=true</returns>
         public override bool Validate(object value, PropertyInfo prop)
         {
-            decimal dec = (decimal)value;
-            return dec <= _value;
+            if (!prop.PropertyType.IsNumericType())
+            {
+                return false;
+            }
+            decimal dec = Convert.ToDecimal(value);
+            return _isInclude ? dec <= _value : dec < _value;
         }
     }
 }

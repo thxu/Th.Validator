@@ -37,7 +37,7 @@ namespace Th.Validator.Constraints
         public override bool Validate(object value, PropertyInfo prop)
         {
             string str = (string)value;
-            var isMatch = Regex.IsMatch(str, _regex);
+            var isMatch = Regex.IsMatch(str, _regex, RegexOptions.ECMAScript);
             return isMatch;
         }
     }

@@ -164,9 +164,16 @@ namespace Th.Validator
         /// <returns>判断结果，集合类型=true</returns>
         internal static bool IsEnumerableType(this Type type)
         {
+            if (type == typeof(string))
+            {
+                return false;
+            }
             var superClassType = typeof(IEnumerable);
+            var superClassType1 = typeof(IEnumerable<>);
             if (Array.IndexOf(type.GetInterfaces(), superClassType) > -1
-            || type.IsSubclassOf(superClassType))
+            || type.IsSubclassOf(superClassType)
+            || Array.IndexOf(type.GetInterfaces(), superClassType1) > -1
+            || type.IsSubclassOf(superClassType1))
             {
                 return true;
             }

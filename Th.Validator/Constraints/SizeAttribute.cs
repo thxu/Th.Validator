@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Reflection;
 
 namespace Th.Validator.Constraints
@@ -66,11 +67,11 @@ namespace Th.Validator.Constraints
                 bool flg2 = _isIncludeMax ? str.Length <= _max : str.Length < _max;
                 return flg1 && flg2;
             }
-            if (prop.PropertyType.IsArray)
+            if (prop.PropertyType.IsEnumerableType())
             {
-                Array array = (Array)value;
-                bool flg1 = _isIncludeMin ? _min <= array.Length : _min < array.Length;
-                bool flg2 = _isIncludeMax ? array.Length <= _max : array.Length < _max;
+                var array = (ICollection)value;
+                bool flg1 = _isIncludeMin ? _min <= array.Count : _min < array.Count;
+                bool flg2 = _isIncludeMax ? array.Count <= _max : array.Count < _max;
                 return flg1 && flg2;
             }
 

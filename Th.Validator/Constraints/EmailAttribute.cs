@@ -29,7 +29,7 @@ namespace Th.Validator.Constraints
             {
                 //_regex = @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
                 //_regex = @"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?";
-                _regex = @"\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}";
+                _regex = @"^\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}$";
             }
         }
 
@@ -41,8 +41,12 @@ namespace Th.Validator.Constraints
         /// <returns>符合要求=true</returns>
         public override bool Validate(object value, PropertyInfo prop)
         {
+            if (prop.PropertyType != typeof(string))
+            {
+                return false;
+            }
             string str = (string)value;
-            var isMatch = Regex.IsMatch(str, _regex);
+            var isMatch = Regex.IsMatch(str, _regex, RegexOptions.ECMAScript);
             return isMatch;
         }
     }
