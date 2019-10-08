@@ -165,7 +165,7 @@ namespace Th.Validator.Aop
                         }
                         if (elementType == null)
                         {
-                            return $"无法找到{prop.PropertyType.FullName}的子元素类型";
+                            return $"无法识别{prop.PropertyType.FullName}的子元素类型";
                         }
 
                         //  循环判断每个子元素

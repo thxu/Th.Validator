@@ -617,6 +617,60 @@ namespace Th.Validator.Test
         }
 
         [TestMethod]
+        public void NotEmptyTest1()
+        {
+            string errMsg = string.Empty;
+            int res = 0;
+
+            try
+            {
+                NotEmptyModel1 model1 = new NotEmptyModel1()
+                {
+                    //ArrayFields = new ArrayList(),
+                    BitArrayFields = new BitArray(1),
+                    //DicFields = new Dictionary<int, string>(),
+                    HashSetFields = new HashSet<int>(),
+                    HashtableFields = new Hashtable(),
+                    HybridDictionaryFields = new HybridDictionary(),
+                    LinkedListFields = new LinkedList<string>(),
+                    ListDictionaryFields = new ListDictionary(),
+                    //QueueFields = new Queue(2),
+                    SortedListFields = new SortedList(),
+                    SortedListFields1 = new SortedList<int, string>(),
+                    SortedSetFields = new SortedSet<int>(),
+                    StackFields = new Stack<int>()
+                };
+
+                //model1.DicFields.Add(1, "2");
+                //model1.ArrayFields.Add(1);
+                //model1.ArrayFields.Add(2);
+                //model1.QueueFields.Enqueue(1);
+
+                res = new TestLogic().NotEmptyTest1(model1);
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+            }
+            Assert.IsTrue(res == 100);
+            Assert.IsTrue(string.IsNullOrEmpty(errMsg));
+
+            errMsg = string.Empty;
+            res = 0;
+
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+            }
+            Assert.IsTrue(res != 100);
+            Assert.IsTrue(!string.IsNullOrEmpty(errMsg));
+        }
+
+        [TestMethod]
         public void NotNullTest()
         {
             string errMsg = string.Empty;
@@ -747,7 +801,7 @@ namespace Th.Validator.Test
                 SizeModel model = new SizeModel
                 {
                     StrField = "12345",
-                    IntFields = new List<int>() { 1,2,3,4},
+                    IntFields = new List<int>() { 1, 2, 3, 4 },
                 };
                 res = new TestLogic().SizeTest(model);
             }
@@ -806,7 +860,7 @@ namespace Th.Validator.Test
                 SizeModel model = new SizeModel
                 {
                     StrField = "12345",
-                    IntFields = new List<int>() { 1, 2},
+                    IntFields = new List<int>() { 1, 2 },
                 };
                 res = new TestLogic().SizeTest(model);
             }
@@ -891,6 +945,13 @@ namespace Th.Validator.Test
         {
             return 100;
         }
+
+        [ValidateParam("model")]
+        public int NotEmptyTest1(NotEmptyModel1 model)
+        {
+            return 100;
+        }
+
 
         [ValidateParam("model")]
         public int NotNullTest(NotNullModel model)
@@ -1022,6 +1083,61 @@ namespace Th.Validator.Test
 
         [NotEmpty("集合不能为null，且至少需要有一个元素")]
         public IList<string> StrFields { get; set; }
+    }
+
+    public class NotEmptyModel1
+    {
+        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
+        //[InnerValid]
+        //public Dictionary<int, string> DicFields { get; set; }
+
+        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
+        //[InnerValid]
+        //public ArrayList ArrayFields { get; set; }
+
+        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
+        //[InnerValid]
+        //public Queue QueueFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public LinkedList<string> LinkedListFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public Hashtable HashtableFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public SortedList SortedListFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public SortedList<int, string> SortedListFields1 { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public Stack<int> StackFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public HashSet<int> HashSetFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public SortedSet<int> SortedSetFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public BitArray BitArrayFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public ListDictionary ListDictionaryFields { get; set; }
+
+        [NotEmpty("集合不能为null，且至少需要有一个元素")]
+        [InnerValid]
+        public HybridDictionary HybridDictionaryFields { get; set; }
     }
 
     public class NotNullModel
