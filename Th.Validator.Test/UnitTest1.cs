@@ -933,7 +933,8 @@ namespace Th.Validator.Test
         ////public int Field3 { get; set; }
 
         //public TestModelB Field4 { get; set; }
-        //[NotNull("字段5不能为Null")]
+        [NotNull("字段5不能为Null")]
+        [InnerValid]
         public IList<TestModelB> Field5 { get; set; }
     }
 

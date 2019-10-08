@@ -67,7 +67,7 @@ namespace Th.Validator.Constraints
                 bool flg2 = _isIncludeMax ? str.Length <= _max : str.Length < _max;
                 return flg1 && flg2;
             }
-            if (prop.PropertyType.IsEnumerableType())
+            if (prop.PropertyType.IsCollectionType())
             {
                 var array = (ICollection)value;
                 bool flg1 = _isIncludeMin ? _min <= array.Count : _min < array.Count;

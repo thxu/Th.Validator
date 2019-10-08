@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 using ArxOne.MrAdvice.Advice;
+using Th.Validator.Constraints;
 
 namespace Th.Validator
 {
     internal static class Common
     {
+        public static ConcurrentDictionary<PropertyInfo, bool> IsChkInnerParamAttrDic = new ConcurrentDictionary<PropertyInfo, bool>();
+
         /// <summary>
         /// 获取入参
         /// </summary>
@@ -162,18 +166,43 @@ namespace Th.Validator
         /// </summary>
         /// <param name="type">类型</param>
         /// <returns>判断结果，集合类型=true</returns>
-        internal static bool IsEnumerableType(this Type type)
+        internal static bool IsCollectionType(this Type type)
         {
             if (type == typeof(string))
             {
                 return false;
             }
-            var superClassType = typeof(IEnumerable);
-            var superClassType1 = typeof(IEnumerable<>);
+            var superClassType = typeof(ICollection);
+            var superClassType1 = typeof(ICollection<>);
             if (Array.IndexOf(type.GetInterfaces(), superClassType) > -1
             || type.IsSubclassOf(superClassType)
             || Array.IndexOf(type.GetInterfaces(), superClassType1) > -1
             || type.IsSubclassOf(superClassType1))
+            {
+                return true;
+            }
+            return type.IsArray;
+        }
+
+        /// <summary>
+        /// 判断是否是集合类型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>判断结果，集合类型=true</returns>
+        internal static bool IsListType(this Type type)
+        {
+            if (type == typeof(string))
+            {
+                return false;
+            }
+            var superClassType = typeof(IList);
+            var superClassType1 = typeof(IList<>);
+            if (type == superClassType
+                || type == superClassType1
+                || Array.IndexOf(type.GetInterfaces(), superClassType) > -1
+                || type.IsSubclassOf(superClassType)
+                || Array.IndexOf(type.GetInterfaces(), superClassType1) > -1
+                || type.IsSubclassOf(superClassType1))
             {
                 return true;
             }
@@ -218,6 +247,30 @@ namespace Th.Validator
                 cnt++;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// 判断是否应该级联检查
+        /// </summary>
+        /// <param name="prop">属性</param>
+        /// <returns>判断结果</returns>
+        internal static bool ShouldChkInnerParam(this PropertyInfo prop)
+        {
+            if (IsChkInnerParamAttrDic.ContainsKey(prop))
+            {
+                return IsChkInnerParamAttrDic[prop];
+            }
+
+            foreach (Attribute attr in prop.GetCustomAttributes(true))
+            {
+                if (attr.GetType() == typeof(InnerValidAttribute))
+                {
+                    IsChkInnerParamAttrDic.AddOrUpdate(prop, true, ((key, val) => true));
+                    return true;
+                }
+            }
+            IsChkInnerParamAttrDic.AddOrUpdate(prop, false, ((key, val) => false));
+            return false;
         }
     }
 }

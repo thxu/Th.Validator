@@ -57,7 +57,7 @@ namespace Th.Validator.Aop
         {
             try
             {
-                var allType = GetChkPrarmType(context);
+                var allType = GetChkParamType(context);
                 if (allType != null && allType.Any())
                 {
                     foreach (var paramInfo in allType)
@@ -85,7 +85,7 @@ namespace Th.Validator.Aop
         /// </summary>
         /// <param name="context">当前函数内容上下文</param>
         /// <returns>类型集合</returns>
-        private Dictionary<Type, object> GetChkPrarmType(MethodAdviceContext context)
+        private Dictionary<Type, object> GetChkParamType(MethodAdviceContext context)
         {
             Dictionary<Type, object> res = new Dictionary<Type, object>();
             List<string> paramNames = GetChkParamNames();
@@ -144,52 +144,52 @@ namespace Th.Validator.Aop
                     return errMsg;
                 }
 
-                if (prop.PropertyType.IsEnumerableType())
+                if (prop.ShouldChkInnerParam())
                 {
-                    elementType = prop.PropertyType.GetElementType();
-                    if (elementType == null)
-                    {
-                        var elementTypes = prop.PropertyType.GetGenericArguments();
-                        if (elementTypes != null && elementTypes.Any())
-                        {
-                            elementType = elementTypes.First();
-                        }
-                        else
-                        {
-                            elementType = null;
-                        }
-                    }
-                    if (elementType == null)
-                    {
-                        return $"无法找到{prop.PropertyType.FullName}的子元素类型";
-                    }
-
                     if (val == null)
                     {
                         continue;
                     }
 
-                    //  循环判断每个子元素
-                    foreach (object arrVal in (IEnumerable)val)
+                    // 有级联检查特性，进一步判断是否list集合或者自定义对象
+                    if (prop.PropertyType.IsListType())
                     {
-                        //errMsg = elementType.IsNeedRecursionChk()
-                        //            ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
-                        //            : SinglePropChk(prop, arrVal);
-                        errMsg = elementType.IsNeedRecursionChk()
-                                   ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
-                                   : string.Empty;
+                        elementType = prop.PropertyType.GetElementType();
+                        if (elementType == null)
+                        {
+                            var elementTypes = prop.PropertyType.GetGenericArguments();
+                            if (elementTypes != null && elementTypes.Any())
+                            {
+                                elementType = elementTypes.First();
+                            }
+                        }
+                        if (elementType == null)
+                        {
+                            return $"无法找到{prop.PropertyType.FullName}的子元素类型";
+                        }
+
+                        //  循环判断每个子元素
+                        foreach (object arrVal in (IList)val)
+                        {
+                            //errMsg = elementType.IsNeedRecursionChk()
+                            //            ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
+                            //            : SinglePropChk(prop, arrVal);
+                            errMsg = elementType.IsNeedRecursionChk()
+                                ? ChkAllProp(elementType.GetProperties().ToList(), arrVal)
+                                : string.Empty;
+                            if (!string.IsNullOrWhiteSpace(errMsg))
+                            {
+                                return errMsg;
+                            }
+                        }
+                    }
+                    if (elementType.IsNeedRecursionChk())
+                    {
+                        errMsg = ChkAllProp(elementType.GetProperties().ToList(), val);
                         if (!string.IsNullOrWhiteSpace(errMsg))
                         {
                             return errMsg;
                         }
-                    }
-                }
-                if (elementType.IsNeedRecursionChk())
-                {
-                    errMsg = ChkAllProp(elementType.GetProperties().ToList(), val);
-                    if (!string.IsNullOrWhiteSpace(errMsg))
-                    {
-                        return errMsg;
                     }
                 }
             }

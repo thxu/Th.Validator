@@ -33,7 +33,7 @@ namespace Th.Validator.Constraints
                 // 字符串，判断非Null，且长度大于零
                 return value != null && ((string)value).Length > 0;
             }
-            if (prop.PropertyType.IsEnumerableType())
+            if (prop.PropertyType.IsCollectionType())
             {
                 // 集合类型，判断非Null，且集合个数大于零
                 return value != null && ((ICollection)value).Count > 0;
