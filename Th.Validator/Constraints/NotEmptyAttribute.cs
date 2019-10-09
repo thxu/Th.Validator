@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Th.Validator.Constraints
@@ -28,15 +29,26 @@ namespace Th.Validator.Constraints
         /// <returns>符合要求=true</returns>
         public override bool Validate(object value, PropertyInfo prop)
         {
+            if (value == null)
+            {
+                return false;
+            }
             if (prop.PropertyType == typeof(string))
             {
                 // 字符串，判断非Null，且长度大于零
-                return value != null && ((string)value).Length > 0;
+                return ((string)value).Length > 0;
             }
-            if (prop.PropertyType.IsCollectionType())
+            if (prop.PropertyType.HasImplementedRawGeneric(typeof(ICollection)))
             {
                 // 集合类型，判断非Null，且集合个数大于零
-                return value != null && ((ICollection)value).Count > 0;
+                return ((ICollection)value).Count > 0;
+            }
+            if (prop.PropertyType.HasImplementedRawGeneric(typeof(ICollection<>)))
+            {
+                // 集合类型，判断非Null，且集合个数大于零
+                var countProp = prop.PropertyType.GetProperty("Count");
+                var count = countProp == null ? 0 : Convert.ToInt32(countProp.GetValue(value, null));
+                return count > 0;
             }
             return false;
         }
