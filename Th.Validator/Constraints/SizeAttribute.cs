@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Th.Validator.Constraints
@@ -60,22 +61,28 @@ namespace Th.Validator.Constraints
             {
                 return false;
             }
+
+            int count = 0;
             if (prop.PropertyType == typeof(string))
             {
                 string str = (string)value;
-                bool flg1 = _isIncludeMin ? _min <= str.Length : _min < str.Length;
-                bool flg2 = _isIncludeMax ? str.Length <= _max : str.Length < _max;
-                return flg1 && flg2;
+                count = str.Length;
             }
-            if (prop.PropertyType.IsCollectionType())
+            if (prop.PropertyType.HasImplementedRawGeneric(typeof(ICollection)))
             {
                 var array = (ICollection)value;
-                bool flg1 = _isIncludeMin ? _min <= array.Count : _min < array.Count;
-                bool flg2 = _isIncludeMax ? array.Count <= _max : array.Count < _max;
-                return flg1 && flg2;
+                count = array.Count;
             }
 
-            return false;
+            if (prop.PropertyType.HasImplementedRawGeneric(typeof(ICollection<>)))
+            {
+                var countProp = prop.PropertyType.GetProperty("Count");
+                count = countProp == null ? 0 : Convert.ToInt32(countProp.GetValue(value, null));
+            }
+
+            bool flg1 = _isIncludeMin ? _min <= count : _min < count;
+            bool flg2 = _isIncludeMax ? count <= _max : count < _max;
+            return flg1 && flg2;
         }
     }
 }
