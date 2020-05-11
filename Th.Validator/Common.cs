@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ArxOne.MrAdvice.Advice;
 using Th.Validator.Constraints;
@@ -323,5 +324,10 @@ namespace Th.Validator
                 => generic == (test.IsGenericType ? test.GetGenericTypeDefinition() : test);
         }
 
+        public static async Task<T> ToTask<T>(T obj)
+        {
+            T result = (T)obj;
+            return await Task.FromResult(result);
+        }
     }
 }

@@ -47,7 +47,9 @@ namespace Th.Validator.Constraints
             {
                 // 集合类型，判断非Null，且集合个数大于零
                 var countProp = prop.PropertyType.GetProperty("Count");
-                var count = countProp == null ? 0 : Convert.ToInt32(countProp.GetValue(value, null));
+                var count = countProp == null
+                    ? ((ICollection)value).Count
+                    : Convert.ToInt32(countProp.GetValue(value, null));
                 return count > 0;
             }
             return false;

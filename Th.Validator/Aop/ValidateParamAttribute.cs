@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using ArxOne.MrAdvice.Advice;
 using Th.Validator.Constraints;
 
@@ -66,6 +67,19 @@ namespace Th.Validator.Aop
                         if (!string.IsNullOrWhiteSpace(chkRes))
                         {
                             // 参数不符合要求
+                            if (context.HasReturnValue)
+                            {
+                                // 如果有返回值，进一步判断返回值类型是否指定类型，若是指定类型，则将错误信息放到指定位置。
+                                var methodInfo = context.TargetMethod as MethodInfo;
+                                if (methodInfo == null)
+                                {
+                                    throw new ConstraintViolationException("参数校验失败补充返回值，未找到目标方法");
+                                }
+                                context.ReturnValue = context.IsTargetMethodAsync
+                                    ? AsyncDefaultForType(methodInfo.ReturnType, chkRes)
+                                    : DefaultForType(methodInfo.ReturnType, chkRes);
+                                return;
+                            }
                             throw new ConstraintViolationException(chkRes);
                         }
                     }
@@ -296,6 +310,77 @@ namespace Th.Validator.Aop
                 return e.Message;
             }
 
+            return null;
+        }
+
+        /// <summary>
+        /// 生成类型默认值
+        /// </summary>
+        /// <param name="targetType">类型</param>
+        /// <param name="msg">Result类型的错误信息</param>
+        /// <returns>类型默认值</returns>
+        internal static object DefaultForType(Type targetType, string msg = null)
+        {
+            Type commonResultType = GeType("Th.Util.Common", "Th.Util.Common.Result");
+            if (commonResultType != null && (commonResultType == targetType || targetType.BaseType == commonResultType))
+            {
+                var instance = Activator.CreateInstance(targetType);
+                //给Message属性赋值 
+                PropertyInfo pi0 = targetType.GetProperty("IsSucceed");
+                if (pi0 != null) pi0.SetValue(instance, false, null);
+
+                //给Message属性赋值 
+                PropertyInfo pi1 = targetType.GetProperty("Message");
+                if (pi1 != null) pi1.SetValue(instance, msg ?? string.Empty, null);
+                return instance;
+            }
+
+            throw new ConstraintViolationException(msg);
+        }
+
+        /// <summary>
+        /// 生成类型默认值
+        /// </summary>
+        /// <param name="targetType">类型</param>
+        /// <param name="msg">Result类型的错误信息</param>
+        /// <returns>类型默认值</returns>
+        internal static object AsyncDefaultForType(Type targetType, string msg = null)
+        {
+            var firstType = targetType.GenericTypeArguments.First();
+            Type commonResultType = GeType("Th.Util.Common", "Th.Util.Common.Result");
+            if (commonResultType != null
+                && (firstType == commonResultType || firstType.BaseType == commonResultType))
+            {
+                var instance = Activator.CreateInstance(firstType);
+                //给Message属性赋值 
+                PropertyInfo pi0 = firstType.GetProperty("IsSucceed");
+                if (pi0 != null) pi0.SetValue(instance, false, null);
+
+                //给Message属性赋值 
+                PropertyInfo pi1 = firstType.GetProperty("Message");
+                if (pi1 != null) pi1.SetValue(instance, msg ?? string.Empty, null);
+                //return instance;
+
+                MethodInfo mi = typeof(Common).GetMethod("ToTask");
+                MethodInfo miConstructed = mi.MakeGenericMethod(firstType);
+                object[] args = { instance };
+                return miConstructed.Invoke(null, args);
+            }
+
+            throw new ConstraintViolationException(msg);
+        }
+
+        internal static Type GeType(string assembly, string typeName)
+        {
+            try
+            {
+                var type = Assembly.Load(assembly).GetType(typeName);
+                return type;
+            }
+            catch (Exception)
+            {
+
+            }
             return null;
         }
     }

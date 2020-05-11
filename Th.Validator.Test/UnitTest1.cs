@@ -5,8 +5,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Th.Util.Common;
 using Th.Validator.Aop;
 using Th.Validator.Constraints;
+using Th.Validator.Test.Models;
 
 namespace Th.Validator.Test
 {
@@ -334,6 +336,80 @@ namespace Th.Validator.Test
         }
 
         [TestMethod]
+        public void PhoneTest()
+        {
+            string errMsg = string.Empty;
+            int res = 0;
+
+            try
+            {
+                PhoneModel model = new PhoneModel
+                {
+                    PhoneField = "13555555554"
+                };
+                res = new TestLogic().PhoneTest(model);
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+            }
+            Assert.IsTrue(res == 100);
+            Assert.IsTrue(string.IsNullOrEmpty(errMsg));
+
+            errMsg = string.Empty;
+            res = 0;
+
+            try
+            {
+                PhoneModel model = new PhoneModel
+                {
+                    PhoneField = "13555555554111222"
+                };
+                res = new TestLogic().PhoneTest(model);
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+            }
+            Assert.IsTrue(res != 100);
+            Assert.IsTrue(!string.IsNullOrEmpty(errMsg));
+        }
+
+        [TestMethod]
+        public void Phone1Test()
+        {
+            Result res = new Result();
+
+            PhoneModel model = new PhoneModel
+            {
+                PhoneField = "13555555554"
+            };
+            res = new TestLogic().PhoneTest1(model);
+
+            Assert.IsTrue(res.IsSucceed);
+            Assert.IsTrue(res.Message == "参数验证通过，执行成功");
+
+
+            model = new PhoneModel
+            {
+                PhoneField = "13555555554111222"
+            };
+            res = new TestLogic().PhoneTest1(model);
+
+            Assert.IsTrue(res.IsSucceed == false);
+            Assert.IsTrue(!string.IsNullOrEmpty(res.Message));
+
+            model = new PhoneModel
+            {
+                PhoneField = "13555555554111222"
+            };
+            res = new TestLogic().PhoneTest2(model).Result;
+
+            Assert.IsTrue(res.IsSucceed == false);
+            Assert.IsTrue(!string.IsNullOrEmpty(res.Message));
+        }
+
+        [TestMethod]
         public void FutureTest()
         {
             string errMsg = string.Empty;
@@ -343,7 +419,7 @@ namespace Th.Validator.Test
             {
                 FutureModel model = new FutureModel
                 {
-                    DatetimeField = new DateTime(2019, 12, 01),
+                    DatetimeField = DateTime.Now.AddMinutes(10),
                     DatetimeField1 = DateTime.MaxValue,
                 };
                 res = new TestLogic().FutureTest(model);
@@ -567,6 +643,7 @@ namespace Th.Validator.Test
                 {
                     StrField = " ",
                     StrFields = new List<string>() { " " },
+                    StrFieldList = new List<string>() { " " },
                 };
                 res = new TestLogic().NotEmptyTest(model);
             }
@@ -586,6 +663,7 @@ namespace Th.Validator.Test
                 {
                     StrField = "",
                     StrFields = new List<string>() { " " },
+                    StrFieldList = new List<string>() { },
                 };
                 res = new TestLogic().NotEmptyTest(model);
             }
@@ -605,6 +683,7 @@ namespace Th.Validator.Test
                 {
                     StrField = " ",
                     StrFields = new List<string>(),
+                    StrFieldList = new List<string>() { " " },
                 };
                 res = new TestLogic().NotEmptyTest(model);
             }
@@ -648,13 +727,13 @@ namespace Th.Validator.Test
                 //model1.LinkedListFields.AddFirst("1");
                 //model1.HashtableFields.Add("1",1);
                 model1.HashSetFields.Add(1);
-                model1.HybridDictionaryFields.Add(1,"2");
-                model1.ListDictionaryFields.Add("1",1);
+                model1.HybridDictionaryFields.Add(1, "2");
+                model1.ListDictionaryFields.Add("1", 1);
                 //model1.SortedListFields.Add(1,"1");
                 //model1.SortedListFields1.Add(1,"2");
                 model1.SortedSetFields.Add(1);
                 //model1.StackFields.Push(1);
-                model1.ArrayFields = new[] {1, 2};
+                model1.ArrayFields = new[] { 1, 2 };
                 model1.ArrayFields2 = null;
 
 
@@ -891,110 +970,6 @@ namespace Th.Validator.Test
         }
     }
 
-    public class TestLogic
-    {
-        [ValidateParam("a-b")]
-        public int AddTest(TestModelA a, int b)
-        {
-            return 1;
-        }
-
-        [ValidateParam("model")]
-        public int AssertFalseTest(AssertFalseModel model, int a, int b)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int AssertTrueTest(AssertTrueModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int DigitsTest(DigitsModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model", "Test2Group")]
-        public int DigitsTest2(DigitsModel model)
-        {
-            return 100;
-        }
-
-
-        [ValidateParam("model")]
-        public int EmailTest(EmailModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int FutureTest(FutureModel model)
-        {
-            return 100;
-        }
-        [ValidateParam("model")]
-        public int PastTest(PastModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int MaxTest(MaxModel model)
-        {
-            return 100;
-        }
-        [ValidateParam("model")]
-        public int MinTest(MinModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int NotBlankTest(NotBlankModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int NotEmptyTest(NotEmptyModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int NotEmptyTest1(NotEmptyModel1 model)
-        {
-            return 100;
-        }
-
-
-        [ValidateParam("model")]
-        public int NotNullTest(NotNullModel model)
-        {
-            return 100;
-        }
-        [ValidateParam("model")]
-        public int NullTest(NullModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int RangeTest(RangeModel model)
-        {
-            return 100;
-        }
-
-        [ValidateParam("model")]
-        public int SizeTest(SizeModel model)
-        {
-            return 100;
-        }
-    }
-
     public class TestModelA
     {
         //public string[] Field02 { get; set; }
@@ -1028,167 +1003,4 @@ namespace Th.Validator.Test
         public int BField3 { get; set; }
     }
 
-    public class AssertFalseModel
-    {
-        [AssertFalse("字段不能为true")]
-        public bool BoolField { get; set; }
-    }
-    public class AssertTrueModel
-    {
-        [AssertTrue("字段不能为false")]
-        public bool BoolField { get; set; }
-    }
-
-    public class DigitsModel
-    {
-        [Digits(3, 3, "位数超过限制")]
-        [Digits(2, 2, "位数超过限制", "Test2Group")]
-        public decimal DecimalField { get; set; }
-    }
-
-    public class EmailModel
-    {
-        [Email("邮件格式不正确")]
-        public string EmailField { get; set; }
-    }
-
-    public class FutureModel
-    {
-        [Future("日期必须大于当前时间")]
-        public DateTime DatetimeField { get; set; }
-
-        [Future("日期必须大于或等于2019-09-01", "2019-09-01", true)]
-        public DateTime DatetimeField1 { get; set; }
-    }
-
-    public class PastModel
-    {
-        [Past("日期不能大于当前时间")]
-        public DateTime DatetimeField { get; set; }
-
-        [Past("日期不能大于2019-09-01", "2019-09-01", true)]
-        public DateTime DatetimeField1 { get; set; }
-    }
-
-    public class MaxModel
-    {
-        [Max(100.01, "必须小于100.01")]
-        public float FloatField { get; set; }
-
-        [Max(100.01, "必须小于或等于100.01", true)]
-        public float FloatField1 { get; set; }
-    }
-
-    public class MinModel
-    {
-        [Min(100.01, "必须大于100.01")]
-        public float FloatField { get; set; }
-
-        [Min(100.01, "必须大于或等于100.01,", true)]
-        public float FloatField1 { get; set; }
-    }
-
-    public class NotBlankModel
-    {
-        [NotBlank("元素必须为非空字符")]
-        public string StrField { get; set; }
-    }
-
-    public class NotEmptyModel
-    {
-        public int[] ArrayFields { get; set; }
-
-        [NotEmpty("字符串不能为null且字符串长度需大于零")]
-        public string StrField { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        public IList<string> StrFields { get; set; }
-    }
-
-    public class NotEmptyModel1
-    {
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        public int[] ArrayFields { get; set; }
-
-        public int[] ArrayFields2 { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public Dictionary<int, string> DicFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public ArrayList ArrayFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public Queue QueueFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public LinkedList<string> LinkedListFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public Hashtable HashtableFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public SortedList SortedListFields { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public SortedList<int, string> SortedListFields1 { get; set; }
-
-        //[NotEmpty("集合不能为null，且至少需要有一个元素")]
-        //[InnerValid]
-        //public Stack<int> StackFields { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        [InnerValid]
-        public HashSet<int> HashSetFields { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        [InnerValid]
-        public SortedSet<int> SortedSetFields { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        [InnerValid]
-        public BitArray BitArrayFields { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        [InnerValid]
-        public ListDictionary ListDictionaryFields { get; set; }
-
-        [NotEmpty("集合不能为null，且至少需要有一个元素")]
-        [InnerValid]
-        public HybridDictionary HybridDictionaryFields { get; set; }
-    }
-
-    public class NotNullModel
-    {
-        [NotNull("字符串不能为null")]
-        public string StrField { get; set; }
-    }
-
-    public class NullModel
-    {
-        [Null("字符串必须为null")]
-        public string StrField { get; set; }
-    }
-
-    public class RangeModel
-    {
-        [Range(1, 100, "值必须在[1,100)之间", true)]
-        public decimal DecimalField { get; set; }
-    }
-
-    public class SizeModel
-    {
-        [Size(4, 10, "字符串长度必须在(4,10]之间", false, true)]
-        public string StrField { get; set; }
-
-        [Size(3, 6, "集合个数必须在(3,6)之间")]
-        public List<int> IntFields { get; set; }
-    }
 }

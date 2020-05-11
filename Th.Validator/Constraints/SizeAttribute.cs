@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Th.Validator.Constraints
 {
     /// <summary>
-    /// 验证元素值的在min和max（包含）指定区间之内，如字符长度、集合大小
+    /// 验证元素值的长度或者数量在min和max（包含）指定区间之内，如字符长度、集合大小
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
