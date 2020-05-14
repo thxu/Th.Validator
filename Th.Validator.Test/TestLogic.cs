@@ -83,6 +83,7 @@ namespace Th.Validator.Test
         {
             return 100;
         }
+
         [ValidateParam("model")]
         public int MinTest(MinModel model)
         {
