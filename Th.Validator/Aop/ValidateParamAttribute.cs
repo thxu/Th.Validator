@@ -197,7 +197,7 @@ namespace Th.Validator.Aop
                             }
                         }
                     }
-                    if (elementType.IsNeedRecursionChk())
+                    else if (elementType.IsNeedRecursionChk())
                     {
                         errMsg = ChkAllProp(elementType.GetProperties().ToList(), val);
                         if (!string.IsNullOrWhiteSpace(errMsg))
